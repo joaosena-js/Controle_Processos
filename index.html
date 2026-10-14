@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Controle de Processos · DBM</title>
+<style>
+:root{--az:#0b3d8f;--az2:#1565c0;--vd:#1b9e5a;--vd2:#e6f6ed;--bg:#f1f6fb;--c:#fff;--tx:#1d2b3a;--mt:#5d6f82;--bd:#d9e3ee}
+@media(prefers-color-scheme:dark){:root{--bg:#0d1520;--c:#152233;--tx:#e6eef7;--mt:#93a6ba;--bd:#27384c;--vd2:#123424}}
+*{box-sizing:border-box}body{margin:0;font:15px/1.45 system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--tx)}
+header{background:linear-gradient(120deg,var(--az),var(--az2) 70%,#1a8f6a);color:#fff;border-bottom:4px solid var(--vd)}
+.top{max-width:1200px;margin:auto;padding:14px 18px 0;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{width:46px;height:46px;border-radius:12px;background:#fff;color:var(--az);display:grid;place-items:center;font-weight:800;font-size:15px;border-bottom:4px solid var(--vd)}
+.top small{opacity:.8;display:block;font-size:12px}.top h1{margin:0;font-size:21px}.sp{flex:1}
+nav{max-width:1200px;margin:auto;padding:10px 18px 0;display:flex;gap:4px;flex-wrap:wrap}
+nav button{background:none;border:0;color:#dbe8ff;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer;border-radius:10px 10px 0 0}
+nav button.on{background:var(--bg);color:var(--az)}@media(prefers-color-scheme:dark){nav button.on{color:#7fb6ff}}
+main{max-width:1200px;margin:auto;padding:18px}
+.btn{border:1px solid var(--bd);background:var(--c);color:var(--tx);padding:8px 14px;border-radius:9px;font:inherit;font-weight:600;cursor:pointer}
+.btn.p{background:var(--vd);border-color:var(--vd);color:#fff}.btn.b{background:var(--az2);border-color:var(--az2);color:#fff}.btn.s{padding:4px 10px;font-size:13px}
+.top .btn{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35);color:#fff}.top .btn.p{background:var(--vd)}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.k{background:var(--c);border:1px solid var(--bd);border-left:5px solid var(--az2);border-radius:12px;padding:14px}
+.k.g{border-left-color:var(--vd)}.k.r{border-left-color:#c92a2a}.k b{font-size:30px;display:block;line-height:1.1}.k span{color:var(--mt);font-size:13px}
+.gr{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.cd{background:var(--c);border:1px solid var(--bd);border-radius:12px;padding:16px}.cd h3{margin:0 0 12px;font-size:16px;color:var(--az2)}
+@media(prefers-color-scheme:dark){.cd h3{color:#7fb6ff}}
+.br{display:grid;grid-template-columns:150px 1fr 40px;gap:8px;align-items:center;margin:7px 0;font-size:13px}
+.br div{background:var(--bg);border-radius:6px;height:16px;overflow:hidden}.br i{display:block;height:100%;border-radius:6px}.br em{font-style:normal;font-weight:700;text-align:right}
+.fl{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+input,select,textarea{font:inherit;padding:8px 10px;border:1px solid var(--bd);border-radius:9px;background:var(--c);color:var(--tx);max-width:100%}
+.li{display:flex;gap:12px;background:var(--c);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer;align-items:center}
+.li:hover{border-color:var(--az2)}.d{min-width:68px;height:58px;border-radius:10px;color:#fff;display:grid;place-items:center;text-align:center;font-weight:800;font-size:22px;line-height:1}
+.d small{font-size:10px;font-weight:600;display:block}.m{flex:1;min-width:0}.m div{color:var(--mt);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m b{color:var(--tx)}.bar{height:6px!important;background:var(--bg);border-radius:4px;margin-top:5px;overflow:hidden}.bar i{display:block;height:100%}
+.tag{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--vd2);color:var(--vd);font-weight:700}.tag.a{background:#e3eeff;color:var(--az2)}.tag.o{background:#fff3d6;color:#9a6a00}
+.tw{overflow-x:auto;background:var(--c);border:1px solid var(--bd);border-radius:12px}table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}th{background:var(--az);color:#fff;position:sticky;top:0}tbody tr{cursor:pointer}tbody tr:hover{background:var(--vd2)}
+dialog{border:0;border-radius:14px;padding:0;width:min(640px,94vw);background:var(--c);color:var(--tx)}dialog::backdrop{background:rgba(5,20,40,.55)}
+dialog h2{margin:0;padding:14px 18px;background:var(--az);color:#fff;border-bottom:4px solid var(--vd);font-size:17px}
+.fm{padding:16px 18px;display:grid;grid-template-columns:1fr 1fr;gap:10px}.fm label{font-size:12px;color:var(--mt);font-weight:600;display:grid;gap:3px}.fm .w{grid-column:1/-1}
+.ac{padding:0 18px 16px;display:flex;gap:8px;flex-wrap:wrap}.ac .sp{flex:1}
+.nt{font-size:12px;color:var(--mt);margin-top:18px}.ib{background:var(--vd2);border-left:4px solid var(--vd);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px}
+@media(max-width:600px){.br{grid-template-columns:100px 1fr 34px}.fm{grid-template-columns:1fr}}
+main.wide{max-width:none;padding:18px 24px}.lst{max-height:340px;overflow:auto}.br2{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--bd);font-size:13px}td.wr{white-space:normal;min-width:200px}
+</style></head><body>
+<header><div class="top"><div class="logo">DBM</div><div><small>Coordenadoria de Patrimônio · CPAT / SEAD</small><h1>Controle de Processos · DBM</h1></div><div class="sp"></div>
+<button class="btn p" onclick="edit(0)">+ Novo processo</button><button class="btn" onclick="xl()">⬇ Excel</button><button class="btn" onclick="bk()">💾 Backup</button><button class="btn" onclick="$('#fi').click()">⬆ Importar</button><input type="file" id="fi" hidden accept=".xlsx,.xlsm,.xls,.json"></div>
+<nav id="nv"></nav></header>
+<main id="mn"></main>
+<dialog id="dg"><h2 id="dt"></h2><div class="fm" id="fm"></div><div class="ac" id="ac"></div></dialog>
+<script src="/xlsx.min.js"></script>
+<script>
+const TIPOS=['Transferência','Alienação','Caixa do setor'];
+let D=[],L={status:[],resp:[],orgaos:[],motivos:[],assuntos:[]},SEED=null,ready=false;
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function api(body){let pw=localStorage.getItem('dbm_pw')||'';
+for(;;){const r=await fetch('/api/data',{method:body?'POST':'GET',headers:{'content-type':'application/json','x-pass':pw},body:body?JSON.stringify(body):undefined});
+if(r.status==401){pw=prompt('Senha de acesso ao sistema:')||'';if(!pw)throw new Error('Senha não informada');localStorage.setItem('dbm_pw',pw);continue}
+if(!r.ok)throw new Error((await r.json().catch(()=>({}))).error||r.status);return r.json()}}
+const run=async f=>{try{await f()}catch(e){alert('Erro: '+e.message)}};
+async function load(){try{const j=await api();D=j.processos||[];if(j.listas)L=Object.assign(L,j.listas);
+if(!j.listas||!D.length){SEED=await(await fetch('/seed.json')).json();if(!j.listas)L=SEED.listas}ready=true}
+catch(e){$('#mn').innerHTML='<div class="ib">Não foi possível conectar ao banco: '+esc(e.message)+'</div>';return}
+if(!$('#dg').open)draw()}
+const day=s=>s?Date.UTC(+s.slice(0,4),+s.slice(5,7)-1,+s.slice(8,10))/864e5:null;
+const TS=()=>{const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')};
+const fmt=s=>s?s.split('-').reverse().join('/'):'—',done=r=>r.status.startsWith('CONCLU');
+const age=r=>{if(!r.tram)return null;const e=done(r)&&r.concl?day(r.concl):day(TS());return Math.round(e-day(r.tram))};
+const BANDS=[[30,'até 30 dias','#1b9e5a'],[60,'31–60 dias','#3b9ae1'],[90,'61–90 dias','#1565c0'],[180,'91–180 dias','#f2a900'],[365,'181–365 dias','#e8590c'],[1e9,'mais de 1 ano','#c92a2a']];
+const col=a=>a==null?'#9aa8b8':BANDS[BANDS.findIndex(b=>a<=b[0])][2];
+let tab='dash',F={q:'',tipo:'',status:'',all:false};
+const TABS=[['dash','📊 Dashboard'],['vida','⏳ Vida do processo'],['todos','📋 Todos os processos'],['listas','⚙ Listas']];
+const view=()=>D.map(r=>({...r,age:age(r)}));
+const tg=r=>`<span class="tag ${r.tipo=='Transferência'?'a':r.tipo=='Alienação'?'':'o'}">${esc(r.tipo)}</span>`;
+
+function bars(l){const m=Math.max(1,...l.map(x=>x[1]));return l.map(x=>`<div class="br"><span>${esc(x[0])}</span><div><i style="width:${x[1]/m*100}%;background:${x[2]}"></i></div><em>${x[1]}</em></div>`).join('')||'<span class="nt">Sem dados</span>'}
+function count(a,f){const o={};a.forEach(r=>{const k=f(r)||'(não informado)';o[k]=(o[k]||0)+1});return Object.entries(o).sort((x,y)=>y[1]-x[1])}
+function dash(){const v=view(),ab=v.filter(r=>!done(r)),ok=v.filter(done),ag=ab.filter(r=>r.age!=null),sorted=[...ag].sort((a,b)=>b.age-a.age),
+avg=ag.length?Math.round(ag.reduce((s,r)=>s+r.age,0)/ag.length):0,old=sorted[0],c180=ag.filter(r=>r.age>180).length,
+tc=ok.filter(r=>r.age!=null&&r.concl),tm=tc.length?Math.round(tc.reduce((s,r)=>s+r.age,0)/tc.length):0;
+return `<div class="kp"><div class="k"><b>${ab.length}</b><span>Processos em aberto com a gente</span></div>
+<div class="k g"><b>${ok.length}</b><span>Concluídos pelo DBM (tempo médio ${tm} dias)</span></div>
+<div class="k"><b>${avg} dias</b><span>Idade média dos abertos</span></div>
+<div class="k r"><b>${old?old.age:0} dias</b><span>Mais antigo${old?': '+esc(old.orgao||old.numero):''}</span></div>
+<div class="k r"><b>${c180}</b><span>Abertos há mais de 180 dias</span></div></div>
+<div class="gr"><div class="cd"><h3>Abertos por tempo no setor</h3>${bars(BANDS.map((b,i)=>[b[1],ag.filter(r=>r.age>(i?BANDS[i-1][0]:-1)&&r.age<=b[0]).length,b[2]]))}</div>
+<div class="cd"><h3>Abertos por tipo</h3>${bars(count(ab,r=>r.tipo).map(x=>[x[0],x[1],'#1565c0']))}<h3 style="margin-top:18px">Abertos por status</h3>${bars(count(ab,r=>r.status).map(x=>[x[0],x[1],'#1b9e5a']))}</div>
+<div class="cd"><h3>Órgãos com mais processos abertos</h3>${bars(count(ab,r=>r.orgao).slice(0,8).map(x=>[x[0],x[1],'#3b9ae1']))}</div>
+<div class="cd"><h3>⚠ 8 mais antigos — atender primeiro</h3>${sorted.slice(0,8).map(r=>`<div class="li" onclick="edit(${r.id})"><div class="d" style="background:${col(r.age)}">${r.age}<small>dias</small></div><div class="m"><b>${esc(r.numero)}</b><div>${esc(desc(r))}</div></div></div>`).join('')}
+<button class="btn b s" onclick="go('vida')">Ver fila completa →</button></div></div>`}
+
+const desc=r=>[r.orgao,r.recebedor?'→ '+r.recebedor:'',r.detalhe].filter(Boolean).join(' · ');
+function filt(v){const q=F.q.toLowerCase();return v.filter(r=>(F.all||!done(r))&&(!F.tipo||r.tipo==F.tipo)&&(!F.status||r.status==F.status)&&(!q||[r.numero,r.orgao,r.recebedor,r.detalhe,r.doc,r.obs,r.resp].join(' ').toLowerCase().includes(q)))}
+function bar(all){const o=(a,v)=>a.map(t=>`<option ${v==t?'selected':''}>${esc(t)}</option>`).join('');
+return `<div class="fl"><input id="q" placeholder="Buscar nº, órgão, assunto…" value="${esc(F.q)}" oninput="F.q=this.value;list()" style="flex:1;min-width:200px">
+<select onchange="F.tipo=this.value;list()"><option value="">Todos os tipos</option>${o(TIPOS,F.tipo)}</select>
+<select onchange="F.status=this.value;list()"><option value="">Todos os status</option>${o(L.status,F.status)}</select>
+${all?'':`<label><input type="checkbox" ${F.all?'checked':''} onchange="F.all=this.checked;list()"> incluir concluídos</label>`}</div><div id="ls"></div>`}
+function list(){const el=$('#ls');if(!el)return;const r=filt(view()).sort((a,b)=>(b.age??-1)-(a.age??-1));
+if(tab=='vida'){const m=Math.max(1,...r.map(x=>x.age||0));
+el.innerHTML=`<p class="nt" style="margin:0 0 10px">${r.length} processo(s) — do mais antigo para o mais novo</p>`+r.map((x,i)=>`<div class="li" onclick="edit(${x.id})"><div class="d" style="background:${col(x.age)}">${x.age??'?'}<small>dias</small></div>
+<div class="m"><div><b>#${i+1} ${esc(x.numero)}</b> ${tg(x)} <span class="tag a">${esc(x.status)}</span></div><div>${esc(desc(x))}${x.itens?' · '+x.itens+' itens':''}</div><div>Entrou em ${fmt(x.tram)}${x.resp?' · 👤 '+esc(x.resp):''}${x.obs?' · '+esc(x.obs):''}</div><div class="bar"><i style="width:${(x.age||0)/m*100}%;background:${col(x.age)}"></i></div></div>
+${done(x)?'':`<button class="btn p s" onclick="event.stopPropagation();fin(${x.id})">✓ Concluir</button>`}</div>`).join('')}
+else el.innerHTML=`<p class="nt" style="margin:0 0 8px">${r.length} processo(s)</p><div class="tw"><table><thead><tr><th>Nº do processo</th><th>Tipo</th><th>Órgão / Interessado</th><th>Órgão recebedor</th><th>Motivo / Assunto</th><th>Itens</th><th>Documento</th><th>Entrada</th><th>Status</th><th>Resp.</th><th>Conclusão</th><th>Dias</th></tr></thead><tbody>${r.map(x=>`<tr onclick="edit(${x.id})"><td>${esc(x.numero)}</td><td>${esc(x.tipo)}</td><td>${esc(x.orgao)}</td><td>${esc(x.recebedor)}</td><td class="wr">${esc(x.detalhe)}</td><td>${x.itens}</td><td>${esc(x.doc)}</td><td>${fmt(x.tram)}</td><td>${esc(x.status)}</td><td>${esc(x.resp)}</td><td>${fmt(x.concl)}</td><td style="font-weight:700;color:${col(x.age)}">${x.age??'—'}</td></tr>`).join('')}</tbody></table></div>`}
+const LN=[['status','Status dos processos'],['resp','Responsáveis (servidores)'],['orgaos','Órgãos'],['motivos','Motivos da baixa (alienação)'],['assuntos','Assuntos (caixa do setor)']];
+function listas(){return `<div class="ib"><b>Cadastro de listas:</b> estes itens aparecem nos formulários. Status que começam com “CONCLU” contam como concluídos. Remover um item não altera processos já cadastrados.</div><div class="gr">`+LN.map(([k,n])=>`<div class="cd"><h3>${n} (${L[k].length})</h3><div class="fl"><input id="n_${k}" placeholder="Novo item…" onkeydown="if(event.key=='Enter')addL('${k}')" style="flex:1"><button class="btn p s" onclick="addL('${k}')">+ Adicionar</button></div><div class="lst">${L[k].map((x,i)=>`<div class="br2"><span>${esc(x)}</span><button class="btn s" onclick="delL('${k}',${i})">✕</button></div>`).join('')}</div></div>`).join('')+'</div>'}
+function addL(k){const v=$('#n_'+k).value.trim();if(!v)return;if(L[k].includes(v))return alert('Esse item já existe.');L[k].push(v);if(k!='status'&&k!='resp')L[k].sort((a,b)=>a.localeCompare(b,'pt'));sl()}
+function delL(k,i){if(confirm('Remover "'+L[k][i]+'" da lista?')){L[k].splice(i,1);sl()}}
+function sl(){run(async()=>{await api({op:'listas',listas:L});draw()})}
+function draw(){$('#nv').innerHTML=TABS.map(t=>`<button class="${tab==t[0]?'on':''}" onclick="go('${t[0]}')">${t[1]}</button>`).join('');$('#mn').className=tab=='todos'?'wide':'';
+if(!ready){$('#mn').innerHTML='<p class="nt">Carregando…</p>';return}
+const sb=D.length?'':`<div class="ib">O banco está vazio. <button class="btn p s" onclick="seed()">Carregar os ${SEED?SEED.processos.length:''} processos da planilha</button></div>`;
+$('#mn').innerHTML=tab=='dash'?sb+dash()+'<p class="nt">Dados salvos no banco online — todos que acessam veem as mesmas informações (atualiza sozinho a cada 1 min).</p>':tab=='listas'?listas():(tab=='vida'?'<div class="ib"><b>Vida do processo:</b> dias que cada processo está conosco, desde a data de entrada no setor. Os mais velhos primeiro — verde é recente, vermelho é crítico (+1 ano).</div>':'')+bar(tab=='todos');
+if(tab=='vida'||tab=='todos'){if(tab=='todos')F.all=true;list()}}
+function seed(){run(async()=>{await api({op:'bulk',items:SEED.processos});await api({op:'listas',listas:L});await load()})}
+function go(t){tab=t;if(t=='vida')F.all=false;draw();scrollTo(0,0)}
+let cur={};const KS=['numero','tipo','tram','orgao','recebedor','detalhe','itens','doc','datadoc','status','resp','concl','obs'];
+function edit(id){cur=id?{...D.find(r=>r.id==id)}:{id:0,numero:'',tipo:TIPOS[0],tram:TS(),orgao:'',recebedor:'',detalhe:'',itens:'',doc:'',datadoc:'',status:L.status[0]||'',resp:'',concl:'',obs:''};
+$('#dt').textContent=id?'Processo '+cur.numero:'Novo processo';form();
+$('#ac').innerHTML=`<button class="btn p" onclick="sv()">Salvar</button>${id?`<button class="btn b" onclick="fin(${id})">✓ Concluir hoje</button>`:''}<span class="sp"></span>${id?`<button class="btn" style="color:#c92a2a" onclick="rm(${id})">Excluir</button>`:''}<button class="btn" onclick="$('#dg').close()">Cancelar</button>`;$('#dg').showModal()}
+function collect(){KS.forEach(k=>{const e=$('#f_'+k);if(e)cur[k]=e.value.trim()})}
+function rt(){const o=cur.tipo;collect();if(cur.tipo!=o)cur.detalhe='';form()}
+function form(){const f=(k,l,t='text',w='',ls='')=>`<label class="${w}">${l}<input type="${t}" id="f_${k}" value="${esc(cur[k])}" ${ls?'list="'+ls+'"':''}></label>`,
+s=(k,l,a)=>{a=[...new Set(['',...a,cur[k]||''])];return `<label>${l}<select id="f_${k}">${a.map(x=>`<option ${cur[k]==x?'selected':''}>${esc(x)}</option>`).join('')}</select></label>`},
+dl=(id,a)=>`<datalist id="${id}">${a.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>`,T=cur.tipo;
+const ex=T=='Transferência'?f('orgao','Órgão cedente','text','','dl_o')+f('recebedor','Órgão recebedor','text','','dl_o')+f('itens','Quantidade de itens','number'):
+T=='Alienação'?f('orgao','Órgão','text','','dl_o')+s('detalhe','Motivo da baixa',L.motivos)+f('itens','Quantidade de itens','number'):
+f('orgao','Interessado','text','','dl_o')+f('detalhe','Assunto / marcador','text','','dl_a');
+$('#fm').innerHTML=f('numero','Nº do processo','text','w')+`<label>Tipo<select id="f_tipo" onchange="rt()">${TIPOS.map(x=>`<option ${T==x?'selected':''}>${x}</option>`).join('')}</select></label>`+f('tram','Data de entrada no setor','date')+ex+f('doc','Nº do documento')+f('datadoc','Data do documento','date')+s('status','Status',L.status)+s('resp','Responsável',L.resp)+f('concl','Data de conclusão','date')+`<label class="w">Observação<textarea id="f_obs" rows="2">${esc(cur.obs)}</textarea></label>`+dl('dl_o',L.orgaos)+dl('dl_a',L.assuntos)}
+async function put(r){const j=await api({op:'save',item:r});r.id=j.id;const i=D.findIndex(x=>x.id==r.id);i<0?D.push(r):D[i]=r}
+function sv(){collect();const r={...cur};if(!r.numero||!r.tram)return alert('Informe o nº do processo e a data de entrada.');
+r.itens=r.itens===''?'':+r.itens;if(r.tipo!='Transferência')r.recebedor='';if(r.tipo=='Caixa do setor')r.itens='';r.status=r.status||L.status[0]||'';
+const o=D.find(x=>x.id==r.id);if(done(r)&&!r.concl)r.concl=TS();if(!done(r)&&o&&o.status!=r.status)r.concl='';
+run(async()=>{await put(r);$('#dg').close();draw()})}
+function fin(id){const r={...D.find(x=>x.id==id)};r.status=L.status.find(s=>s.startsWith('CONCLU'))||'CONCLUÍDO – DBM';r.concl=TS();run(async()=>{await put(r);$('#dg').close();draw()})}
+function rm(id){if(confirm('Excluir este processo?'))run(async()=>{await api({op:'del',id});D=D.filter(x=>x.id!=id);$('#dg').close();draw()})}
+const H=['Nº do processo','Tipo','Órgão cedente / Órgão / Interessado','Órgão recebedor','Motivo da baixa / Assunto','Itens','Documento','Data do doc.','Data de tramitação','Status','Responsável','Conclusão','Observação'],K=['numero','tipo','orgao','recebedor','detalhe','itens','doc','datadoc','tram','status','resp','concl','obs'];
+function xl(){const rows=view().sort((a,b)=>(b.age??-1)-(a.age??-1)).map(r=>{const o={};K.forEach((k,i)=>o[H[i]]=/^(tram|datadoc|concl)$/.test(k)?fmt(r[k]).replace('—',''):r[k]);o['Dias com o setor']=r.age;return o});
+const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'PROCESSOS');XLSX.writeFile(wb,'processos_dbm_'+TS()+'.xlsx')}
+function bk(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({processos:D,listas:L})],{type:'application/json'}));a.download='backup_dbm_'+TS()+'.json';a.click()}
+const pd=v=>{if(v instanceof Date)return new Date(v.getTime()+432e5).toISOString().slice(0,10);v=String(v??'').trim();let m=v.match(/^(\d\d)\/(\d\d)\/(\d{4})$/);return m?`${m[3]}-${m[2]}-${m[1]}`:/^\d{4}-\d\d-\d\d/.test(v)?v.slice(0,10):''};
+$('#fi').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;let n,ls=null;try{
+if(/\.json$/i.test(f.name)){const j=JSON.parse(await f.text());n=Array.isArray(j)?j:j.processos;ls=Array.isArray(j)?null:j.listas}
+else{const wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true}),ws=wb.Sheets.PROCESSOS;if(!ws)return alert('Importe um Excel exportado por este sistema (aba PROCESSOS) ou um backup .json.');
+n=XLSX.utils.sheet_to_json(ws).map(o=>{const r={};K.forEach((k,j)=>{const v=o[H[j]];r[k]=/^(tram|datadoc|concl)$/.test(k)?pd(v):(v??'')});r.itens=r.itens===''?'':+r.itens||'';return r}).filter(r=>r.numero)}
+if(!Array.isArray(n)||!n.length)throw 0}catch(x){return alert('Arquivo inválido.')}
+if(confirm(`Substituir os dados do banco por ${n.length} processos do arquivo? Isso vale para todos os usuários.`))run(async()=>{await api({op:'bulk',items:n});if(ls){L=Object.assign(L,ls);await api({op:'listas',listas:L})}await load()})};
+setInterval(()=>{if(ready&&!$('#dg').open&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))load()},60000);
+draw();load();
+</script></body></html>
