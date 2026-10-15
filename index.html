@@ -50,9 +50,9 @@ dialog{border:0;border-radius:16px;padding:0;width:min(680px,94vw);background:va
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body>
 <aside id="sd"><div class="lg"><i></i><div><b>Controle de Processos</b><small>DBM · CPAT / SEAD</small></div></div><nav id="nv"></nav>
-<div class="sf"><button onclick="xl()"></button><button onclick="bk()"></button><button onclick="$('#fi').click()"></button></div></aside>
+<div class="sf"><button onclick="xl()"></button><button onclick="bk()"></button><button onclick="openImp()"></button></div></aside>
 <header id="tp"><button id="mb" onclick="$('#sd').classList.toggle('o')"></button><div class="gs"><input id="gq" placeholder="Busca rápida em todos os processos…" oninput="gq(this.value)" autocomplete="off"><div id="gd" hidden></div></div><span class="sp"></span>
-<button class="btn" id="bt" onclick="th()" title="Alternar tema"></button><button class="btn p" onclick="edit(0)" id="bn"></button><input type="file" id="fi" hidden accept=".xlsx,.xlsm,.xls,.json"></header>
+<button class="btn" id="bt" onclick="th()" title="Alternar tema"></button><button class="btn p" onclick="edit(0)" id="bn"></button></header>
 <main id="mn"></main>
 <dialog id="dg"><h2><span id="dt"></span></h2><div class="fm" id="fm"></div><div class="ac" id="ac"></div></dialog>
 <dialog id="dd"></dialog>
@@ -196,13 +196,25 @@ function xl(){const rows=view().sort((a,b)=>(b.age??-1)-(a.age??-1)).map(r=>{con
 const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'PROCESSOS');XLSX.writeFile(wb,'processos_dbm_'+TS()+'.xlsx')}
 function bk(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({processos:D,listas:L})],{type:'application/json'}));a.download='backup_dbm_'+TS()+'.json';a.click()}
 const pd=v=>{if(v instanceof Date)return new Date(v.getTime()+432e5).toISOString().slice(0,10);v=String(v??'').trim();let m=v.match(/^(\d\d)\/(\d\d)\/(\d{4})$/);return m?`${m[3]}-${m[2]}-${m[1]}`:/^\d{4}-\d\d-\d\d/.test(v)?v.slice(0,10):''};
-$('#fi').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;let n,ls=null;try{
-if(/\.json$/i.test(f.name)){const j=JSON.parse(await f.text());n=Array.isArray(j)?j:j.processos;ls=Array.isArray(j)?null:j.listas}
-else{const wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true}),ws=wb.Sheets.PROCESSOS;if(!ws)return alert('Importe um Excel exportado por este sistema (aba PROCESSOS) ou um backup .json.');
-n=XLSX.utils.sheet_to_json(ws).map(o=>{const r={};K.forEach((k,j)=>{const v=o[H[j]];r[k]=/^(tram|datadoc|concl)$/.test(k)?pd(v):(v??'')});r.itens=r.itens===''?'':+r.itens||'';return r}).filter(r=>r.numero)}
-if(!Array.isArray(n)||!n.length)throw 0}catch(x){return alert('Arquivo inválido.')}
-if(confirm(`Substituir os dados do banco por ${n.length} processos do arquivo? Isso vale para todos os usuários.`))run(async()=>{await api({op:'bulk',items:n});if(ls){L=Object.assign(L,ls);await api({op:'listas',listas:L})}await load()})};
-$('.sf').innerHTML=`<button onclick="xl()">${ic('xls',17)} Planilha completa</button><button onclick="bk()">${ic('db',17)} Backup (JSON)</button><button onclick="$('#fi').click()">${ic('up',17)} Importar</button>`;
+const nh=s=>nz(s).replace(/[^a-z0-9]/g,'');
+const EXT={numero:['numero','processo','nprocesso','nodoprocesso'],orgao:['orgao','interessado','orgaocedente','cedente'],recebedor:['recebedor','orgaorecebedor','destino'],detalhe:['motivo','motivodabaixa','assunto'],itens:['itens','quantidade','qtd','qtdeitens'],doc:['documento','ndocumento'],tram:['entrada','dataentrada','datadeentrada','datadetramitacao'],status:['status','situacao'],resp:['responsavel'],concl:['conclusao','dataconclusao'],obs:['observacao','obs'],bem:['bem','descricaodobem'],datadoc:['datadodocumento']};
+let IMP=null;
+function openImp(){IMP=null;$('#dd').innerHTML=`<h2><span>Importar dados</span><button class="btn s" onclick="$('#dd').close()">${ic('x',15)}</button></h2><div class="fm"><label>Parte a importar<select id="ip" onchange="impPrev()"><option value="">Todos os tipos (conforme o arquivo)</option>${TIPOS.map(t=>`<option>${t}</option>`).join('')}</select></label><label>Modo<select id="im" onchange="impPrev()"><option value="u">Adicionar e atualizar (não apaga nada)</option><option value="r">Substituir somente essa parte</option><option value="f">Substituir TUDO (restaurar backup)</option></select></label><label class="w">Arquivo (.xlsx ou backup .json)<input type="file" id="if" accept=".xlsx,.xlsm,.xls,.json" onchange="impRead()"></label><div class="w ib" id="ipv">Escolha o arquivo para ver a prévia antes de importar. Só a parte escolhida é alterada; as demais não são tocadas.</div></div><div class="ac"><button class="btn p" id="ig" disabled onclick="impGo()">${ic('up',15)} Importar</button><button class="btn" onclick="$('#dd').close()">Cancelar</button></div>`;$('#dd').showModal()}
+async function impRead(){const f=$('#if').files[0];if(!f)return;try{if(/\.json$/i.test(f.name)){const j=JSON.parse(await f.text());IMP={rows:Array.isArray(j)?j:j.processos,ls:Array.isArray(j)?null:j.listas};if(!Array.isArray(IMP.rows))throw 0}else IMP={wb:XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:true})}}catch(e){IMP=null;$('#ig').disabled=true;$('#ipv').textContent='Arquivo inválido.';return}impPrev()}
+function rowsOf(p){if(IMP.rows)return IMP.rows;const wb=IMP.wb,q=p?nh(p).slice(0,6):'',sn=wb.SheetNames.find(n=>q&&nh(n).startsWith(q))||wb.SheetNames.find(n=>nh(n)=='processos')||wb.SheetNames[0];
+return XLSX.utils.sheet_to_json(wb.Sheets[sn],{defval:''}).map(o=>{const m={};for(const h in o)m[nh(h)]=o[h];const r={};K.forEach((c,j)=>{const a=[nh(H[j]),...(EXT[c]||[])].find(x=>x in m),v=a?m[a]:'';r[c]=/^(tram|datadoc|concl)$/.test(c)?pd(v):String(v??'').trim()});r.itens=r.itens===''?'':+r.itens||'';return r})}
+function impPrev(){if(!IMP)return;const m=$('#im').value,p=m=='f'?'':$('#ip').value,all=rowsOf(p);let skip=0;const rs=[];
+all.forEach(r=>{if(!String(r.numero||'').trim())return;const t=r.tipo?TIPOS.find(x=>nh(x).startsWith(nh(r.tipo).slice(0,6))):p;if(!t||(p&&t!=p)){skip++;return}rs.push({...r,numero:String(r.numero).trim(),tipo:t})});
+const key=r=>r.numero+'|'+r.tipo,ex=new Set(D.map(r=>r.numero.trim()+'|'+r.tipo)),ts=[...new Set(rs.map(r=>r.tipo))];let nw=0,up=0;[...new Map(rs.map(r=>[key(r),r])).values()].forEach(r=>ex.has(key(r))?up++:nw++);
+const del=m=='r'?D.filter(r=>ts.includes(r.tipo)).length:m=='f'?D.length:0;IMP.rs=rs;
+$('#ipv').innerHTML=`<b>${rs.length}</b> linha(s) válida(s) ${ts.length?'de: '+ts.join(', '):''}.<br>`+(m=='u'?`${nw} nova(s) · ${up} já existente(s), que serão atualizadas (pelo nº do processo + tipo).`:m=='r'?`Serão removidos ${del} processo(s) existente(s) de ${ts.join(', ')||'—'} e inseridos ${rs.length}.`:`<b>Atenção:</b> apaga os ${del} processos atuais de todos os tipos e coloca ${rs.length}${IMP.ls?' (e restaura as listas do backup)':''}.`)+(m!='f'?'<br>As demais partes não serão alteradas.':'')+(skip?`<br>${skip} linha(s) ignorada(s) (sem nº ou de outro tipo).`:'');$('#ig').disabled=!rs.length}
+function impGo(){const m=$('#im').value,p=m=='f'?'':$('#ip').value,rs=IMP.rs;if(!rs.length)return;
+if(!confirm(m=='f'?'Substituir TODOS os dados do banco? Vale para todos os usuários.':'Confirmar a importação'+(p?' de '+p:'')+'?'))return;
+const st=L.status[0]||'';rs.forEach(r=>{if(!r.status)r.status=st;if(done(r)&&!r.concl)r.concl=TS()});
+const ts=[...new Set(rs.map(r=>r.tipo))],ex=new Map(D.map(r=>[r.numero.trim()+'|'+r.tipo,r])),ups=[],news=[];
+if(m=='u'){new Map(rs.map(r=>[r.numero+'|'+r.tipo,r])).forEach((r,k)=>{const o=ex.get(k);if(!o)return news.push(r);const{id,...old}=o,d={...old};for(const c in r)if(r[c]!==''&&r[c]!=null)d[c]=r[c];if(r.status&&r.status!=old.status)d.mov=TS();ups.push({id,data:d})})}else rs.forEach(r=>news.push(r));
+run(async()=>{if(m=='f'){await api({op:'bulk',items:news});if(IMP.ls){L=Object.assign(L,IMP.ls);await api({op:'listas',listas:L})}}else await api({op:'merge',deltipos:m=='r'?(p?[p]:ts):[],updates:ups,news});$('#dd').close();LAST='';await load()})}
+$('.sf').innerHTML=`<button onclick="xl()">${ic('xls',17)} Planilha completa</button><button onclick="bk()">${ic('db',17)} Backup (JSON)</button><button onclick="openImp()">${ic('up',17)} Importar dados</button>`;
 $('.lg i').innerHTML=ic('bank',22);$('#mb').innerHTML=ic('menu',22);$('#bn').innerHTML=ic('plus',16)+' <span class="tp-t">Novo processo</span>';
 $('#bt').innerHTML=ic(document.documentElement.dataset.t=='dark'?'sun':'moon',17);
 document.addEventListener('click',e=>{if(!e.target.closest('.gs'))$('#gd').hidden=true});

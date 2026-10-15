@@ -26,6 +26,13 @@ module.exports = async (req, res) => {
       await sql`insert into processos(data) select value from jsonb_array_elements(${JSON.stringify(items)}::jsonb)`;
       return res.json({ ok: 1 });
     }
+    if (b.op === 'merge') {
+      const dels = b.deltipos || [], ups = b.updates || [], news = b.news || [];
+      if (dels.length) await sql`delete from processos where data->>'tipo' in (select jsonb_array_elements_text(${JSON.stringify(dels)}::jsonb))`;
+      if (ups.length) await sql`update processos p set data = v.data from jsonb_to_recordset(${JSON.stringify(ups)}::jsonb) as v(id int, data jsonb) where p.id = v.id`;
+      if (news.length) await sql`insert into processos(data) select value from jsonb_array_elements(${JSON.stringify(news)}::jsonb)`;
+      return res.json({ ok: 1 });
+    }
     if (b.op === 'listas') {
       await sql`insert into listas(k, v) values ('main', ${JSON.stringify(b.listas)}::jsonb) on conflict (k) do update set v = excluded.v`;
       return res.json({ ok: 1 });
